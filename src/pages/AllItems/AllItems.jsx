@@ -1,139 +1,120 @@
-// src/pages/AllItems/AllItems.jsx
-import { useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 import LostItemCard from "../../components/LostItem/LostItemCard";
-
-// Dummy data
-const allItems = [
-  {
-    id: 1,
-    image: "https://via.placeholder.com/300x200.png?text=Wallet",
-    name: "Black Wallet",
-    location: "Library",
-    category: "Personal Item",
-    date: "2025-06-01",
-  },
-  {
-    id: 2,
-    image: "https://via.placeholder.com/300x200.png?text=USB+Drive",
-    name: "USB Drive",
-    location: "Computer Lab",
-    category: "Electronics",
-    date: "2025-06-10",
-  },
-  {
-    id: 3,
-    image: "https://via.placeholder.com/300x200.png?text=Keys",
-    name: "House Keys",
-    location: "CSE Building",
-    category: "Accessories",
-    date: "2025-05-15",
-  },
-  {
-    id: 4,
-    image: "https://via.placeholder.com/300x200.png?text=Notebook",
-    name: "Math Notebook",
-    location: "Classroom 104",
-    category: "Stationery",
-    date: "2025-06-05",
-  },
-  {
-    id: 5,
-    image: "https://via.placeholder.com/300x200.png?text=Bag",
-    name: "Black Backpack",
-    location: "Bus Stand",
-    category: "Bags",
-    date: "2025-06-08",
-  },
-  {
-    id: 6,
-    image: "https://via.placeholder.com/300x200.png?text=Watch",
-    name: "Digital Watch",
-    location: "Cafeteria",
-    category: "Electronics",
-    date: "2025-06-12",
-  },
-  {
-    id: 7,
-    image: "https://via.placeholder.com/300x200.png?text=Glasses",
-    name: "Sunglasses",
-    location: "Playground",
-    category: "Accessories",
-    date: "2025-05-20",
-  },
-];
-
-const categories = [
-  "All Categories",
-  "Personal Item",
-  "Electronics",
-  "Accessories",
-  "Stationery",
-  "Bags",
-];
-
-const locations = [
-  "All Locations",
-  "Library",
-  "Computer Lab",
-  "CSE Building",
-  "Classroom 104",
-  "Bus Stand",
-  "Cafeteria",
-  "Playground",
-];
+import { auth } from "../../firebase/firebase.config";
 
 const AllItems = () => {
-  const [categoryFilter, setCategoryFilter] = useState("All Categories");
-  const [locationFilter, setLocationFilter] = useState("All Locations");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [user] = useAuthState(auth);
+  const navigate = useNavigate();
+  const [items, setItems] = useState([]);
 
-  // Filter logic
-  const filteredItems = allItems.filter((item) => {
-    const itemDate = new Date(item.date);
+  const [categoryFilter, setCategoryFilter] = useState(
+    () => localStorage.getItem("categoryFilter") || "All Categories"
+  );
+  const [locationFilter, setLocationFilter] = useState(
+    () => localStorage.getItem("locationFilter") || "All Locations"
+  );
+  const [startDate, setStartDate] = useState(
+    () => localStorage.getItem("startDate") || ""
+  );
+  const [endDate, setEndDate] = useState(
+    () => localStorage.getItem("endDate") || ""
+  );
 
-    // Category filter
-    if (
-      categoryFilter !== "All Categories" &&
-      item.category !== categoryFilter
-    ) {
-      return false;
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/lost-items");
+        setItems(res.data);
+      } catch (err) {
+        console.error("Error fetching items:", err);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  const handleClaimClick = (item) => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      setSelectedItem(item);
+      setShowClaimModal(true);
     }
+  };
 
-    // Location filter
-    if (
-      locationFilter !== "All Locations" &&
-      item.location !== locationFilter
-    ) {
-      return false;
-    }
+  const handleCloseModal = () => {
+    setShowClaimModal(false);
+    setSelectedItem(null);
+  };
 
-    // Date range filter
-    if (dateFrom && itemDate < new Date(dateFrom)) {
-      return false;
-    }
-    if (dateTo && itemDate > new Date(dateTo)) {
-      return false;
-    }
+  const handleSubmitClaim = async (e) => {
+    e.preventDefault();
+    const form = e.target;
 
-    return true;
-  });
+    const claimData = {
+      itemId: selectedItem._id,
+      itemName: selectedItem.name,
+      claimerName: user.displayName || "Anonymous",
+      claimerEmail: user.email,
+      claimDetails: form.claimDetails.value,
+    };
+
+    try {
+      await axios.post("http://localhost:5000/api/claim", claimData);
+      alert("Claim submitted successfully!");
+      handleCloseModal();
+    } catch (error) {
+      console.error("Failed to submit claim:", error);
+      alert("Failed to submit claim.");
+    }
+  };
 
   const resetFilters = () => {
     setCategoryFilter("All Categories");
     setLocationFilter("All Locations");
-    setDateFrom("");
-    setDateTo("");
+    setStartDate("");
+    setEndDate("");
   };
+
+  useEffect(() => {
+    localStorage.setItem("categoryFilter", categoryFilter);
+    localStorage.setItem("locationFilter", locationFilter);
+    localStorage.setItem("startDate", startDate);
+    localStorage.setItem("endDate", endDate);
+  }, [categoryFilter, locationFilter, startDate, endDate]);
+
+  // 🔄 Filter Logic from Old Code (EXACTLY COPIED)
+  const categories = [
+    "All Categories",
+    ...new Set(items.map((item) => item.category)),
+  ];
+  const locations = [
+    "All Locations",
+    ...new Set(items.map((item) => item.location)),
+  ];
+
+  const filteredItems = items.filter((item) => {
+    const itemDate = new Date(item.date);
+    const matchCategory =
+      categoryFilter === "All Categories" || item.category === categoryFilter;
+    const matchLocation =
+      locationFilter === "All Locations" || item.location === locationFilter;
+    const matchStartDate = startDate ? itemDate >= new Date(startDate) : true;
+    const matchEndDate = endDate ? itemDate <= new Date(endDate) : true;
+    return matchCategory && matchLocation && matchStartDate && matchEndDate;
+  });
 
   return (
     <Container className="py-5">
-      <h2 className="mb-4">All Lost & Found Items</h2>
-
-      {/* Filter Section */}
+      <h2 className="mb-4">All Lost Items</h2>
       <Form className="mb-4 d-flex flex-wrap align-items-end gap-3">
-        {/* Category */}
+        {/* Filters */}
         <Form.Group controlId="categoryFilter" style={{ minWidth: "200px" }}>
           <Form.Label>Category</Form.Label>
           <Form.Select
@@ -148,27 +129,24 @@ const AllItems = () => {
           </Form.Select>
         </Form.Group>
 
-        {/* Date From */}
         <Form.Group controlId="dateFrom" style={{ minWidth: "150px" }}>
           <Form.Label>Date From</Form.Label>
           <Form.Control
             type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
           />
         </Form.Group>
 
-        {/* Date To */}
         <Form.Group controlId="dateTo" style={{ minWidth: "150px" }}>
           <Form.Label>Date To</Form.Label>
           <Form.Control
             type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
           />
         </Form.Group>
 
-        {/* Location */}
         <Form.Group controlId="locationFilter" style={{ minWidth: "200px" }}>
           <Form.Label>Location</Form.Label>
           <Form.Select
@@ -183,24 +161,52 @@ const AllItems = () => {
           </Form.Select>
         </Form.Group>
 
-        {/* Reset Button */}
-        <Button variant="secondary" onClick={resetFilters}>
+        <Button variant="outline-secondary" onClick={resetFilters}>
           Reset Filters
         </Button>
       </Form>
 
-      {/* Items */}
       <Row>
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => (
-            <Col md={4} key={item.id} className="mb-4">
-              <LostItemCard item={item} />
+            <Col md={4} key={item._id} className="mb-4">
+              <LostItemCard item={item} onClaimClick={handleClaimClick} />
             </Col>
           ))
         ) : (
-          <p>No items found matching the selected filters.</p>
+          <p className="text-center text-muted">No items match your filters.</p>
         )}
       </Row>
+
+      <Modal show={showClaimModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Claim Lost Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedItem && (
+            <Form onSubmit={handleSubmitClaim}>
+              <p>
+                <strong>Item:</strong> {selectedItem.name}
+              </p>
+              <p>
+                <strong>Lost Location:</strong> {selectedItem.location}
+              </p>
+              <Form.Group className="mb-3" controlId="claimDetails">
+                <Form.Label>Claim Details</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  name="claimDetails"
+                  rows={3}
+                  required
+                />
+              </Form.Group>
+              <Button variant="primary" type="submit" className="w-100">
+                Submit Claim
+              </Button>
+            </Form>
+          )}
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

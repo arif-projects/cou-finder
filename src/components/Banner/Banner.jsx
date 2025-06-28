@@ -1,4 +1,4 @@
-// src/components/Banner/Banner.jsx
+import axios from "axios"; // Added Axios import
 import { useState } from "react";
 import {
   Button,
@@ -30,7 +30,8 @@ const Banner = () => {
 
   const handleClose = () => setShow(false);
 
-  const handleSubmit = (e) => {
+  // Updated handleSubmit with Axios POST
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const item = {
@@ -42,12 +43,19 @@ const Banner = () => {
       image: form.image.value,
       userEmail: user.email,
       userName: user.displayName || "Anonymous",
+      status: "pending", // Added default status
     };
 
-    console.log("Submitted item:", item);
+    try {
+      // POST to backend API
+      await axios.post("http://localhost:5000/api/lost-items", item);
 
-    setShow(false);
-    setShowToast(true);
+      setShow(false);
+      setShowToast(true);
+    } catch (error) {
+      console.error("Failed to submit item:", error);
+      alert("Failed to submit item. Please try again.");
+    }
   };
 
   return (
@@ -89,7 +97,7 @@ const Banner = () => {
           </Row>
         </Container>
 
-        {/* Report Modal */}
+        {/* Report Modal (No changes) */}
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Report Found Item</Modal.Title>
@@ -134,7 +142,7 @@ const Banner = () => {
         </Modal>
       </div>
 
-      {/* Success Toast */}
+      {/* Success Toast (No changes) */}
       <Toast
         onClose={() => setShowToast(false)}
         show={showToast}
@@ -146,22 +154,9 @@ const Banner = () => {
           right: 20,
           minWidth: "250px",
           zIndex: 9999,
-          borderRadius: "10px",
-          backgroundColor: "#d4edda",
-          color: "#155724",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          textAlign: "center",
-          fontSize: "18px",
-          fontWeight: "600",
-          padding: "15px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "10px",
         }}
       >
-        <div style={{ fontSize: "24px" }}>✔️</div>
-        Report Submitted!
+        <Toast.Body>✔️ Report Submitted Successfully!</Toast.Body>
       </Toast>
     </>
   );
