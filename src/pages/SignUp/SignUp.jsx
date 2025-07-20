@@ -7,6 +7,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import app from "../../firebase/firebase.config";
+import "./SignUp.css"; // 👈 Import styling
 
 const auth = getAuth(app);
 
@@ -27,76 +28,102 @@ const SignUp = () => {
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        // Update Firebase user profile with name
         updateProfile(result.user, {
           displayName: name,
         }).then(() => {
-          console.log("Profile updated");
-
-          // TODO: Send user info to MongoDB via backend later
-          // You’ll need axios + your API here
-
           navigate("/");
         });
       })
       .catch((error) => {
-        console.error(error);
         setError(error.message);
       });
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
-      <h2 className="mb-4 text-center">Sign Up</h2>
-      <form onSubmit={handleSignUp}>
-        <div className="mb-3">
-          <label className="form-label">Full Name</label>
-          <input type="text" name="name" className="form-control" required />
+    <div className="signup-page d-flex flex-column flex-md-row mt-5">
+      {/* Left image section */}
+      <div className="signup-image d-none d-md-block">
+        {/* Background image applied via CSS */}
+      </div>
+
+      {/* Right form section */}
+      <div className="signup-form-wrapper d-flex align-items-center justify-content-center ">
+        <div className="signup-form-container">
+          <h2 className="form-heading mb-4 text-center">Sign Up</h2>
+          <form onSubmit={handleSignUp}>
+            <div className="form-group mb-3">
+              <label>Full Name</label>
+              <input
+                type="text"
+                name="name"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label>Email address</label>
+              <input
+                type="email"
+                name="email"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label>Phone Number</label>
+              <input
+                type="text"
+                name="phone"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label>Student ID</label>
+              <input
+                type="text"
+                name="studentId"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label>Department</label>
+              <input
+                type="text"
+                name="department"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label>Batch</label>
+              <input
+                type="text"
+                name="batch"
+                className="form-control"
+                required
+              />
+            </div>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <button type="submit" className="login-btn">
+              Sign Up
+            </button>
+          </form>
+          <p className="mt-3 text-center">
+            Already have an account? <a href="/login">Login</a>
+          </p>
         </div>
-        <div className="mb-3">
-          <label className="form-label">Email address</label>
-          <input type="email" name="email" className="form-control" required />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            name="password"
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Phone Number</label>
-          <input type="text" name="phone" className="form-control" required />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Student ID</label>
-          <input
-            type="text"
-            name="studentId"
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Department</label>
-          <input
-            type="text"
-            name="department"
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Batch</label>
-          <input type="text" name="batch" className="form-control" required />
-        </div>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <button type="submit" className="btn btn-success w-100">
-          Sign Up
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

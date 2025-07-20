@@ -1,18 +1,13 @@
-import axios from "axios"; // Added Axios import
+// src/components/Banner/Banner.jsx
+import axios from "axios";
 import { useState } from "react";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  Modal,
-  Row,
-  Toast,
-} from "react-bootstrap";
+import { Button, Form, Modal, Toast } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { FaBoxes, FaSearchPlus } from "react-icons/fa"; // ✅ New import
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/firebase.config";
-import bannerImg from "../../media/banner.jpg";
+import bgImage from "../../media/cou.png";
+import "./Banner.css";
 
 const Banner = () => {
   const [show, setShow] = useState(false);
@@ -21,16 +16,12 @@ const Banner = () => {
   const navigate = useNavigate();
 
   const handleReportClick = () => {
-    if (!user) {
-      navigate("/login");
-    } else {
-      setShow(true);
-    }
+    if (!user) navigate("/login");
+    else setShow(true);
   };
 
   const handleClose = () => setShow(false);
 
-  // Updated handleSubmit with Axios POST
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -43,13 +34,10 @@ const Banner = () => {
       image: form.image.value,
       userEmail: user.email,
       userName: user.displayName || "Anonymous",
-      status: "pending", // Added default status
+      status: "pending",
     };
-
     try {
-      // POST to backend API
       await axios.post("http://localhost:5000/api/lost-items", item);
-
       setShow(false);
       setShowToast(true);
     } catch (error) {
@@ -60,89 +48,89 @@ const Banner = () => {
 
   return (
     <>
-      <div style={{ backgroundColor: "#f0f8ff", padding: "60px 0" }}>
-        <Container>
-          <Row className="align-items-center">
-            <Col md={6}>
-              <h1 className="mb-4">Welcome to CoU Finder</h1>
-              <p className="mb-4">
-                A Smart Campus Lost & Found Management System to help you
-                recover your lost belongings.
-              </p>
-              <Button
-                variant="primary"
-                className="me-3"
-                onClick={handleReportClick}
-              >
-                Found an Item?
-              </Button>
-              <Button
-                variant="outline-primary"
-                onClick={() =>
-                  document
-                    .getElementById("lost-items")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Browse Lost Items
-              </Button>
-            </Col>
-            <Col md={6}>
-              <img
-                src={bannerImg}
-                alt="Lost and Found"
-                className="img-fluid rounded"
-              />
-            </Col>
-          </Row>
-        </Container>
-
-        {/* Report Modal (No changes) */}
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Report Found Item</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-2">
-                <Form.Label>Item Name</Form.Label>
-                <Form.Control type="text" name="name" required />
-              </Form.Group>
-
-              <Form.Group className="mb-2">
-                <Form.Label>Category</Form.Label>
-                <Form.Control type="text" name="category" required />
-              </Form.Group>
-
-              <Form.Group className="mb-2">
-                <Form.Label>Date Found</Form.Label>
-                <Form.Control type="date" name="date" required />
-              </Form.Group>
-
-              <Form.Group className="mb-2">
-                <Form.Label>Found Location</Form.Label>
-                <Form.Control type="text" name="location" required />
-              </Form.Group>
-
-              <Form.Group className="mb-2">
-                <Form.Label>Description</Form.Label>
-                <Form.Control as="textarea" name="description" rows={2} />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Image URL</Form.Label>
-                <Form.Control type="text" name="image" />
-              </Form.Group>
-
-              <Button type="submit" variant="success" className="w-100">
-                Submit Report
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
+      <div
+        className="d-flex justify-content-center align-items-center text-center banner-section"
+        style={{
+          backgroundImage: `url(${bgImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          minHeight: "100vh",
+          position: "relative",
+        }}
+      >
+        <div className="overlay"></div>
+        <div className="content text-white position-relative px-3">
+          <h1 className="display-4 fw-bold animate__animated animate__fadeInDown">
+            Lost It? Found It? Let CoU Finder Help.
+          </h1>
+          <p className="lead mb-4 animate__animated animate__fadeInUp">
+            A smarter way to handle{" "}
+            <span className="highlight-word">lost & found</span> on campus.
+          </p>
+          <div className="d-flex flex-column flex-md-row justify-content-center gap-3 animate__animated animate__fadeInUp">
+            <Button
+              variant="light"
+              className="btn-cta shadow-sm d-flex align-items-center gap-2"
+              onClick={handleReportClick}
+            >
+              <FaSearchPlus />
+              Found an Item?
+            </Button>
+            <Button
+              variant="outline-light"
+              className="btn-cta d-flex align-items-center gap-2"
+              onClick={() =>
+                document
+                  .getElementById("lost-items")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              <FaBoxes />
+              Browse Lost Items
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Success Toast (No changes) */}
+      {/* Modal */}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Report Found Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-2">
+              <Form.Label>Item Name</Form.Label>
+              <Form.Control type="text" name="name" required />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Category</Form.Label>
+              <Form.Control type="text" name="category" required />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Date Found</Form.Label>
+              <Form.Control type="date" name="date" required />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Found Location</Form.Label>
+              <Form.Control type="text" name="location" required />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Description</Form.Label>
+              <Form.Control as="textarea" name="description" rows={2} />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Image URL</Form.Label>
+              <Form.Control type="text" name="image" />
+            </Form.Group>
+            <Button type="submit" variant="success" className="w-100">
+              Submit Report
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
       <Toast
         onClose={() => setShowToast(false)}
         show={showToast}

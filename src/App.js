@@ -3,6 +3,7 @@ import MyNavbar from "./components/Navbar/MyNavbar";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import AllItems from "./pages/AllItems/AllItems";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import HelpCenter from "./pages/HelpCenter/HelpCenter";
 import Home from "./pages/Home";
 import Login from "./pages/Login/Login";
 import SignUp from "./pages/SignUp/SignUp";
@@ -18,6 +19,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/all-items" element={<AllItems />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/help" element={<HelpCenter />} />
         <Route
           path="/dashboard"
           element={

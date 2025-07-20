@@ -5,6 +5,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/firebase.config";
 import LostItemCard from "./LostItemCard";
+import "./LostItemStyle.css";
 
 const LostItemSection = () => {
   const [user] = useAuthState(auth);
@@ -60,7 +61,10 @@ const LostItemSection = () => {
 
   return (
     <Container className="py-5">
-      <h2 id="lost-items" className="mb-4">
+      <h2
+        id="lost-items"
+        className="recently-found-heading text-center animate-fade-in mb-5"
+      >
         Recently Found Items
       </h2>
       <Row>
@@ -72,10 +76,7 @@ const LostItemSection = () => {
       </Row>
 
       <div className="text-center mt-4">
-        <Button
-          variant="outline-primary"
-          onClick={() => navigate("/all-items")}
-        >
+        <Button className="glow-btn" onClick={() => navigate("/all-items")}>
           Browse More Items
         </Button>
       </div>

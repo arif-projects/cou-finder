@@ -1,0 +1,43 @@
+/* Navber design starts */
+
+/* Smooth hide/show transition */
+.transition-navbar {
+  transition: top 0.4s ease;
+}
+
+.navbar-hidden {
+  top: -100px;
+  position: fixed;
+}
+
+.navbar-visible {
+  top: 0;
+  position: fixed;
+}
+
+/* Hover effect for nav items */
+.nav-link-custom {
+  position: relative;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.nav-link-custom:hover {
+  color: #8712db;
+}
+
+.nav-link-custom::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #4b0082;
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link-custom:hover::after {
+  width: 100%;
+}
+/* Navber design ends */

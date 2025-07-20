@@ -1,0 +1,64 @@
+/* src/pages/SignUp/SignUp.css */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+.signup-page {
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
+
+.signup-image {
+  flex: 1;
+  background: url("https://i.ibb.co/RkWgX7Kw/login-img.jpg") no-repeat center
+    center;
+  background-size: cover;
+}
+
+.signup-form-wrapper {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f2f7ff;
+}
+
+.signup-form-container {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 10px 10px 20px #d9e2f3, -10px -10px 20px #ffffff;
+  width: 100%;
+  max-width: 500px;
+}
+
+.form-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #5a96e3;
+}
+
+/* Login-style button reused */
+.login-btn {
+  background-color: #5a96e3;
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  width: 100%;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #467fd1;
+  box-shadow: 0 4px 12px rgba(90, 150, 227, 0.4);
+  cursor: pointer;
+}
+
+.form-control {
+  border-radius: 10px;
+  padding: 10px 15px;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 4px rgba(90, 150, 227, 0.2);
+  border-color: #5a96e3;
+}

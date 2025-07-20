@@ -1,4 +1,6 @@
 import Banner from "../components/Banner/Banner";
+import BlogTipsSection from "../components/BlogTipsSection/BlogTipsSection";
+import CampusMapSection from "../components/CampusMapSection/CampusMapSection";
 import Footer from "../components/Footer/Footer";
 import LostItemSection from "../components/LostItem/LostItemSection";
 import SuccessStats from "../components/SuccessStats/SuccessStats";
@@ -11,6 +13,8 @@ const Home = () => {
       <LostItemSection />
       <SuccessStats />
       <UserReviews />
+      <BlogTipsSection />
+      <CampusMapSection />
       <Footer />
     </div>
   );

@@ -2,9 +2,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { FaRedoAlt } from "react-icons/fa"; // Animated reset icon
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/Footer/Footer";
 import LostItemCard from "../../components/LostItem/LostItemCard";
 import { auth } from "../../firebase/firebase.config";
+import "./AllItems.css";
 
 const AllItems = () => {
   const [user] = useAuthState(auth);
@@ -89,7 +92,7 @@ const AllItems = () => {
     localStorage.setItem("endDate", endDate);
   }, [categoryFilter, locationFilter, startDate, endDate]);
 
-  // 🔄 Filter Logic from Old Code (EXACTLY COPIED)
+  // Filter logic
   const categories = [
     "All Categories",
     ...new Set(items.map((item) => item.category)),
@@ -111,103 +114,136 @@ const AllItems = () => {
   });
 
   return (
-    <Container className="py-5">
-      <h2 className="mb-4">All Lost Items</h2>
-      <Form className="mb-4 d-flex flex-wrap align-items-end gap-3">
-        {/* Filters */}
-        <Form.Group controlId="categoryFilter" style={{ minWidth: "200px" }}>
-          <Form.Label>Category</Form.Label>
-          <Form.Select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+    <>
+      <Container className="py-5">
+        <h2 className="display-4 text-center fw-bold mb-4 mt-5 animate__animated animate__fadeInDown">
+          All Lost Items
+        </h2>
+
+        {/* Filter form with neumorphic design & animation */}
+        <Form className="mb-4 d-flex flex-wrap align-items-end gap-3 filter-form animate-fade-in">
+          <Form.Group
+            controlId="categoryFilter"
+            className="filter-group"
+            style={{ minWidth: "200px" }}
           >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+            <Form.Label>Category</Form.Label>
+            <Form.Select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="filter-input"
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
-        <Form.Group controlId="dateFrom" style={{ minWidth: "150px" }}>
-          <Form.Label>Date From</Form.Label>
-          <Form.Control
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group controlId="dateTo" style={{ minWidth: "150px" }}>
-          <Form.Label>Date To</Form.Label>
-          <Form.Control
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group controlId="locationFilter" style={{ minWidth: "200px" }}>
-          <Form.Label>Location</Form.Label>
-          <Form.Select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
+          <Form.Group
+            controlId="dateFrom"
+            className="filter-group"
+            style={{ minWidth: "150px" }}
           >
-            {locations.map((loc) => (
-              <option key={loc} value={loc}>
-                {loc}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+            <Form.Label>Date From</Form.Label>
+            <Form.Control
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="filter-input"
+            />
+          </Form.Group>
 
-        <Button variant="outline-secondary" onClick={resetFilters}>
-          Reset Filters
-        </Button>
-      </Form>
+          <Form.Group
+            controlId="dateTo"
+            className="filter-group"
+            style={{ minWidth: "150px" }}
+          >
+            <Form.Label>Date To</Form.Label>
+            <Form.Control
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="filter-input"
+            />
+          </Form.Group>
 
-      <Row>
-        {filteredItems.length > 0 ? (
-          filteredItems.map((item) => (
-            <Col md={4} key={item._id} className="mb-4">
-              <LostItemCard item={item} onClaimClick={handleClaimClick} />
-            </Col>
-          ))
-        ) : (
-          <p className="text-center text-muted">No items match your filters.</p>
-        )}
-      </Row>
+          <Form.Group
+            controlId="locationFilter"
+            className="filter-group"
+            style={{ minWidth: "200px" }}
+          >
+            <Form.Label>Location</Form.Label>
+            <Form.Select
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="filter-input"
+            >
+              {locations.map((loc) => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
-      <Modal show={showClaimModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Claim Lost Item</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedItem && (
-            <Form onSubmit={handleSubmitClaim}>
-              <p>
-                <strong>Item:</strong> {selectedItem.name}
-              </p>
-              <p>
-                <strong>Lost Location:</strong> {selectedItem.location}
-              </p>
-              <Form.Group className="mb-3" controlId="claimDetails">
-                <Form.Label>Claim Details</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="claimDetails"
-                  rows={3}
-                  required
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit" className="w-100">
-                Submit Claim
-              </Button>
-            </Form>
+          <Button
+            variant="outline-secondary"
+            className="reset-btn d-flex align-items-center gap-2"
+            onClick={resetFilters}
+          >
+            <FaRedoAlt className="reset-icon" />
+            Reset Filters
+          </Button>
+        </Form>
+
+        <Row>
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
+              <Col md={4} key={item._id} className="mb-4">
+                <LostItemCard item={item} onClaimClick={handleClaimClick} />
+              </Col>
+            ))
+          ) : (
+            <p className="text-center text-muted">
+              No items match your filters.
+            </p>
           )}
-        </Modal.Body>
-      </Modal>
-    </Container>
+        </Row>
+
+        <Modal show={showClaimModal} onHide={handleCloseModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Claim Lost Item</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedItem && (
+              <Form onSubmit={handleSubmitClaim}>
+                <p>
+                  <strong>Item:</strong> {selectedItem.name}
+                </p>
+                <p>
+                  <strong>Lost Location:</strong> {selectedItem.location}
+                </p>
+                <Form.Group className="mb-3" controlId="claimDetails">
+                  <Form.Label>Claim Details</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="claimDetails"
+                    rows={3}
+                    required
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit" className="w-100">
+                  Submit Claim
+                </Button>
+              </Form>
+            )}
+          </Modal.Body>
+        </Modal>
+      </Container>
+      <Footer />
+    </>
   );
 };
 

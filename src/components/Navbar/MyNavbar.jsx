@@ -3,8 +3,10 @@ import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/firebase.config";
+import "./Navbar.css";
 
 const CustomNavbar = () => {
   const [user] = useAuthState(auth);
@@ -19,7 +21,6 @@ const CustomNavbar = () => {
       setShowNavbar(prevScrollPos > currentScrollPos || currentScrollPos < 10);
       setPrevScrollPos(currentScrollPos);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [prevScrollPos]);
@@ -36,52 +37,50 @@ const CustomNavbar = () => {
   return (
     <Navbar
       expand="lg"
-      bg="light"
       fixed="top"
-      className={`shadow-sm ${
-        showNavbar ? "top-0" : "-top-20"
-      } transition-all duration-300`}
+      bg="light"
+      className={`shadow transition-navbar ${
+        showNavbar ? "navbar-visible" : "navbar-hidden"
+      }`}
+      style={{ fontFamily: "'Poppins', sans-serif" }}
     >
       <Container>
-        {/* Left side: Logo + Links */}
-        <Navbar.Brand as={Link} to="/">
-          <img
-            src="/logo192.png"
-            alt="CoU Finder"
-            width="30"
-            height="30"
-            className="d-inline-block align-top"
-          />{" "}
+        {/* Brand Name with Icon */}
+        <Navbar.Brand
+          as={Link}
+          to="/"
+          className="fw-bold d-flex align-items-center gap-2"
+          style={{ fontSize: "1.4rem", color: "#4B0082" }}
+        >
+          <FaSearch className="mb-1" />
           CoU Finder
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">
-              Home
-            </Nav.Link>
-            <Nav.Link as={Link} to="/about">
-              About Us
-            </Nav.Link>
-            <Nav.Link as={Link} to="/help">
-              Help Center
-            </Nav.Link>
-            <Nav.Link as={Link} to="/all-items">
-              All Items
-            </Nav.Link>
+            {["/", "/all-items", "/about", "/help"].map((path, idx) => (
+              <Nav.Link
+                key={idx}
+                as={Link}
+                to={path}
+                className="nav-link-custom"
+              >
+                {["Home", "All Items", "About Us", "Help Center"][idx]}
+              </Nav.Link>
+            ))}
             {user && (
-              <Nav.Link as={Link} to="/dashboard">
+              <Nav.Link as={Link} to="/dashboard" className="nav-link-custom">
                 Dashboard
               </Nav.Link>
             )}
           </Nav>
 
-          {/* Right side: Username + Logout / Login */}
+          {/* Right Side Auth Controls */}
           <Nav className="align-items-center gap-2">
             {user ? (
               <>
-                <span className="text-dark fw-semibold">
+                <span className="fw-semibold text-dark">
                   {user.displayName || "User"}
                 </span>
                 <Button variant="outline-danger" onClick={handleLogout}>

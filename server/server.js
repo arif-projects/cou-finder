@@ -33,6 +33,9 @@ app.use("/api/lost-items", lostItemRoutes); // 🧾 Public + Admin Lost Items
 const claimPublicRoutes = require("./routes/claimPublicRoutes");
 app.use("/api/claim", claimPublicRoutes); // 🧾 Public Claim Submission Route
 
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api/admins", adminRoutes);
+
 // Test route
 app.get("/", (req, res) => {
   res.send("Server is running and connected to MongoDB!");

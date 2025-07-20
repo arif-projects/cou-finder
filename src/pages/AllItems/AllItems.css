@@ -1,0 +1,78 @@
+/* Font recommendation */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Neumorphic container for each filter */
+.filter-group {
+  background: #f0f4ff;
+  border-radius: 15px;
+  padding: 1rem 1.25rem;
+  box-shadow: 6px 6px 10px #bec8d6, -6px -6px 10px #ffffff;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Input hover & focus */
+.filter-input {
+  border: none;
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: #e9f0ff;
+  box-shadow: inset 4px 4px 6px #c2ccdf, inset -4px -4px 6px #ffffff;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.filter-input:hover,
+.filter-input:focus {
+  background: #d6e1ff;
+  box-shadow: inset 2px 2px 5px #a1b1d6, inset -2px -2px 5px #ffffff;
+  outline: none;
+}
+
+/* Glowing Reset button */
+.reset-btn {
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: #2a3f87;
+  background: #d9e3ff;
+  border: 2px solid #8a9de5;
+  box-shadow: 0 0 8px rgba(138, 157, 229, 0.5);
+  transition: box-shadow 0.4s ease, background-color 0.4s ease;
+}
+
+.reset-btn:hover {
+  background: #a3b0f8;
+  box-shadow: 0 0 15px 3px #6f7dfb;
+  color: white;
+  cursor: pointer;
+}
+
+/* Animated icon */
+.reset-icon {
+  animation: spin 2s linear infinite;
+  font-size: 1.2rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
