@@ -32,8 +32,7 @@ const Dashboard = () => {
   const [loadingMatched, setLoadingMatched] = useState(false);
   const [errorMatched, setErrorMatched] = useState(null);
 
-  // Users tab state (still dummy as no backend info was provided for fetching users)
-  // This part remains unchanged as per your instruction to not touch other parts.
+  // Users tab state
   const [users, setUsers] = useState([
     {
       uid: "u1",
@@ -56,18 +55,17 @@ const Dashboard = () => {
   ]);
 
   // Admin settings tab state
-  const [admins, setAdmins] = useState([]); // Will be fetched from backend
+  const [admins, setAdmins] = useState([]);
   const [loadingAdmins, setLoadingAdmins] = useState(false);
   const [errorAdmins, setErrorAdmins] = useState(null);
   const [newAdminEmail, setNewAdminEmail] = useState("");
 
-  // --- Fetch Lost Items (Public endpoint, but can be protected if needed) ---
+  // --- Fetch Lost Items ---
   const fetchLostItems = async () => {
     setLoadingLostItems(true);
     setErrorLostItems(null);
 
     try {
-      // Using axiosInstance, which is configured with BASE_URL/api
       const res = await axiosInstance.get("/lost-items");
       if (Array.isArray(res.data)) {
         setLostItems(
@@ -97,13 +95,12 @@ const Dashboard = () => {
     }
   };
 
-  // --- Fetch Claims (Admin-Protected) ---
+  // --- Fetch Claims ---
   const fetchClaims = async () => {
     setLoadingClaims(true);
     setErrorClaims(null);
 
     try {
-      // ✅ Adjusted to hit the admin-protected /api/claims endpoint
       const res = await axiosInstance.get("/claims");
       if (Array.isArray(res.data)) {
         setClaims(
@@ -137,35 +134,7 @@ const Dashboard = () => {
     }
   };
 
-  // --- Fetch Admins (Admin-Protected) ---
-  const fetchAdmins = async () => {
-    setLoadingAdmins(true);
-    setErrorAdmins(null);
-
-    try {
-      const res = await axiosInstance.get("/admins");
-      if (Array.isArray(res.data)) {
-        setAdmins(res.data);
-      } else {
-        setErrorAdmins("Unexpected response format from /api/admins");
-      }
-    } catch (error) {
-      console.error("Fetch admins error:", error);
-      let message = "Failed to fetch admins";
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        message = "Unauthorized: Please ensure you are logged in as an admin.";
-      } else if (error.response?.data?.message) {
-        message = error.response.data.message;
-      } else if (error.message) {
-        message = error.message;
-      }
-      setErrorAdmins(message);
-    } finally {
-      setLoadingAdmins(false);
-    }
-  };
-
-  // --- Update Lost Item Status (Admin-Protected) ---
+  // --- Update Lost Item Status ---
   const updateLostItemStatus = async (id, newStatus) => {
     try {
       await axiosInstance.put(`/lost-items/${id}`, { status: newStatus });
@@ -184,39 +153,39 @@ const Dashboard = () => {
     }
   };
 
-  // --- Verify Claim (Admin-Protected) ---
-  const verifyClaim = async (claimId) => {
+  // --- Approve Claim ---
+  const approveClaim = async (claimId, itemId) => {
     try {
-      await axiosInstance.put(`/claims/${claimId}`, { status: "matched" }); // ✅ Adjusted to use /claims
+      // Approve the claim
+      await axiosInstance.put(`/claims/${claimId}/approve`);
+
+      // Update claim status in local state
       setClaims((prev) =>
         prev.map((claim) =>
-          claim.id === claimId ? { ...claim, status: "matched" } : claim
+          claim.id === claimId ? { ...claim, status: "approved" } : claim
         )
       );
-      // Also update lost item status in UI
-      const claim = claims.find((c) => c.id === claimId);
-      if (claim) {
-        await updateLostItemStatus(claim.itemId, "matched");
-      }
+
+      // Update the lost item status to "matched"
+      await updateLostItemStatus(itemId, "matched");
     } catch (error) {
-      console.error("Verify claim error:", error);
+      console.error("Approve claim error:", error);
       alert(
         error.response?.data?.message ||
           error.message ||
-          "Failed to verify claim"
+          "Failed to approve claim"
       );
     }
   };
 
-  // --- Reject Claim (Admin-Protected) ---
+  // --- Reject Claim ---
   const rejectClaim = async (claimId) => {
     try {
-      await axiosInstance.put(`/claims/${claimId}`, { status: "rejected" }); // ✅ Adjusted to use /claims
-      setClaims((prev) =>
-        prev.map((claim) =>
-          claim.id === claimId ? { ...claim, status: "rejected" } : claim
-        )
-      );
+      // Reject the claim
+      await axiosInstance.put(`/claims/${claimId}/reject`);
+
+      // 🔁 Force fresh fetch from backend
+      await fetchClaims();
     } catch (error) {
       console.error("Reject claim error:", error);
       alert(
@@ -227,7 +196,7 @@ const Dashboard = () => {
     }
   };
 
-  // --- Add Admin (Admin-Protected) ---
+  // --- Add Admin ---
   const addAdmin = async (e) => {
     e.preventDefault();
     if (!newAdminEmail.trim()) {
@@ -239,7 +208,7 @@ const Dashboard = () => {
       await axiosInstance.post("/admins", { email: newAdminEmail.trim() });
       alert("Admin added successfully!");
       setNewAdminEmail("");
-      fetchAdmins(); // Re-fetch the list of admins to show the update
+      // fetchAdmins();
     } catch (error) {
       console.error("Error adding admin:", error);
       alert(
@@ -248,7 +217,7 @@ const Dashboard = () => {
     }
   };
 
-  // --- Remove Admin (Admin-Protected) ---
+  // --- Remove Admin ---
   const removeAdmin = async (emailToRemove) => {
     if (
       window.confirm(
@@ -258,7 +227,6 @@ const Dashboard = () => {
       try {
         await axiosInstance.delete(`/admins/${emailToRemove}`);
         alert("Admin removed successfully!");
-        // Update state directly for immediate UI feedback
         setAdmins((prev) => prev.filter((a) => a.email !== emailToRemove));
       } catch (error) {
         console.error("Error removing admin:", error);
@@ -295,7 +263,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchLostItems();
     fetchClaims();
-    fetchAdmins(); // Fetch admins on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -447,6 +414,15 @@ const Dashboard = () => {
               {/* Claims Tab */}
               <Tab.Pane eventKey="claims">
                 <h5 className="mb-3">Claim Requests</h5>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="mb-3"
+                  onClick={fetchClaims}
+                  disabled={loadingClaims}
+                >
+                  Refresh Claims
+                </Button>
                 {loadingClaims && (
                   <div className="text-center my-3">
                     <Spinner animation="border" />
@@ -457,7 +433,6 @@ const Dashboard = () => {
                   <Table striped bordered hover responsive>
                     <thead className="table-dark">
                       <tr>
-                        {" "}
                         <th>Claimer Name</th>
                         <th>Email</th>
                         <th>Item ID / Name</th>
@@ -491,7 +466,7 @@ const Dashboard = () => {
                                 className={`badge text-capitalize ${
                                   claim.status === "pending"
                                     ? "bg-warning"
-                                    : claim.status === "matched"
+                                    : claim.status === "approved"
                                     ? "bg-success"
                                     : "bg-danger"
                                 }`}
@@ -508,9 +483,11 @@ const Dashboard = () => {
                                     variant="success"
                                     size="sm"
                                     className="me-2"
-                                    onClick={() => verifyClaim(claim.id)}
+                                    onClick={() =>
+                                      approveClaim(claim.id, claim.itemId)
+                                    }
                                   >
-                                    Verify & Match
+                                    Approve
                                   </Button>
                                   <Button
                                     variant="danger"
@@ -650,7 +627,7 @@ const Dashboard = () => {
                 </Table>
               </Tab.Pane>
 
-              {/* Admin Settings Tab (LIVE API INTEGRATION) */}
+              {/* Admin Settings Tab */}
               <Tab.Pane eventKey="admins">
                 <h5 className="mb-3">Admin Settings</h5>
                 <Form onSubmit={addAdmin} className="mb-3">

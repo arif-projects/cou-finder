@@ -69,7 +69,7 @@ const CustomNavbar = () => {
                 {["Home", "All Items", "About Us", "Help Center"][idx]}
               </Nav.Link>
             ))}
-            {user && (
+            {user?.email === "admin@cou.edu" && (
               <Nav.Link as={Link} to="/dashboard" className="nav-link-custom">
                 Dashboard
               </Nav.Link>
