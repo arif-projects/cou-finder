@@ -128,3 +128,20 @@
 .animate-fade-in {
   animation: fadeInUp 1s ease forwards;
 }
+
+.review-subheading {
+  font-size: 1.2rem;
+  color: #6c757d;
+  margin-top: 0;
+}
+
+.leave-review-link {
+  font-size: 1.5rem;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.leave-review-link:hover {
+  text-decoration: underline;
+}

@@ -33,6 +33,9 @@ app.use("/api/lost-items", lostItemRoutes); // 🧾 Public + Admin Lost Items
 const claimPublicRoutes = require("./routes/claimPublicRoutes");
 app.use("/api/claim", claimPublicRoutes); // 🧾 Public Claim Submission Route
 
+const reviewRoutes = require("./routes/reviewRoutes"); // Correct path to reviewRoutes file
+app.use("/api/reviews", reviewRoutes); // Ensure it's being used correctly
+
 const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admins", adminRoutes);
 
