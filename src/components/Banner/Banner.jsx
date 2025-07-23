@@ -37,7 +37,7 @@ const Banner = () => {
       status: "pending",
     };
     try {
-      await axios.post("http://localhost:5000/api/lost-items", item);
+      await axios.post("https://cou-finder.onrender.com/api/lost-items", item);
       setShow(false);
       setShowToast(true);
     } catch (error) {

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AuthProvider from "../context/AuthProvider";
 
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:5000/api", // Your backend URL
+  baseURL: "https://cou-finder.onrender.com/api", // Your backend URL
 });
 const useAxiosSecure = () => {
   const { user, logout } = useContext(AuthProvider);

@@ -16,7 +16,7 @@ const LostItemSection = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/lost-items")
+      .get("https://cou-finder.onrender.com/api/lost-items")
       .then((res) => setItems(res.data))
       .catch((err) => console.error("Error fetching lost items:", err));
   }, []);
@@ -48,7 +48,7 @@ const LostItemSection = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/claim", claimData);
+      await axios.post("https://cou-finder.onrender.com/api/claim", claimData);
       alert("Claim submitted successfully!");
       handleCloseModal();
     } catch (err) {

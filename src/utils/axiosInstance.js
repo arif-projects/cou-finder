@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api", // or your deployed URL
+  baseURL: "https://cou-finder.onrender.com/api", // or your deployed URL
 });
 
 // Attach token

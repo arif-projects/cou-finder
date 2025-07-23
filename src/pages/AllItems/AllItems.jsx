@@ -33,7 +33,9 @@ const AllItems = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/lost-items");
+        const res = await axios.get(
+          "https://cou-finder.onrender.com/api/lost-items"
+        );
         setItems(res.data);
       } catch (err) {
         console.error("Error fetching items:", err);
@@ -69,7 +71,7 @@ const AllItems = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/claim", claimData);
+      await axios.post("https://cou-finder.onrender.com/api/claim", claimData);
       alert("Claim submitted successfully!");
       handleCloseModal();
     } catch (error) {

@@ -18,7 +18,7 @@ const UserReviews = () => {
   // Fetch reviews from the backend
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/reviews") // Correct backend URL
+      .get("https://cou-finder.onrender.com/api/reviews") // Correct backend URL
       .then((response) => {
         setReviews(response.data); // Update state with data from backend
       })
@@ -32,7 +32,7 @@ const UserReviews = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:5000/api/reviews", formData) // Correct backend URL
+      .post("https://cou-finder.onrender.com/api/reviews", formData) // Correct backend URL
       .then((response) => {
         setReviews([...reviews, response.data]); // Add the new review to the list
         setShowModal(false); // Close modal after submission
